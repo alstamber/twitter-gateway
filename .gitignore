@@ -1,4 +1,6 @@
-.bundle/
 Gemfile.lock
-vendor/
 config.yml
+.bundle/
+log/
+tmp/
+vendor/

@@ -12,8 +12,15 @@ module TwitterGateway
       @client = Twitter::REST::Client.new(config)
     end
 
+    get '/' do
+      'Hello'
+    end
 
-    post '/' do
+    get '/upload' do
+      'Use POST method.'
+    end
+
+    post '/upload' do
       if @params[:bearer] == @bearer
         @message = @params[:message]
         @temp_file_name = @params[:media][:tempfile]
