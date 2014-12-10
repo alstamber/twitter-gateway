@@ -1,15 +1,17 @@
 require "sinatra"
 require "twitter"
-require "yaml"
 
 module TwitterGateway
   class App < Sinatra::Application
 
     before do
-      yml = YAML.load_file('config.yml')
-      config = yml['oauth']
-      @bearer = yml['bearer']
-      @client = Twitter::REST::Client.new(config)
+      @bearer = ENV['BEARER']
+      @client = Twitter::REST::Client.new do |config|
+        config.consumer_key = ENV['CONSUMER_KEY']
+        config.consumer_secret = ENV['CONSUMER_SECRET']
+        config.access_token = ENV['ACCESS_TOKEN']
+        config.access_token_secret = ENV['ACCESS_TOKEN_SECRET']
+      end
     end
 
     get '/' do
@@ -21,12 +23,8 @@ module TwitterGateway
     end
 
     post '/upload' do
-      if @params[:bearer] == @bearer
-        @message = @params[:message]
-        @temp_file_name = @params[:media][:tempfile]
-        @client.update_with_media(@message, File.new(@temp_file_name))
-        erb :result
-      end
+      http_headers = request.env.select { |k, v| k.start_with?('HTTP_') }
+      logger.info "#{http_headers}"
     end
   end
 end
