@@ -15,6 +15,7 @@ module TwitterGateway
     end
 
     get '/' do
+      @client.update("hoge")
       'Hello'
     end
 
@@ -23,8 +24,12 @@ module TwitterGateway
     end
 
     post '/upload' do
-      http_headers = request.env.select { |k, v| k.start_with?('HTTP_') }
-      logger.info "#{http_headers}"
+      if @params[:bearer] == @bearer
+        @message = @params[:message]
+        @temp_file_name = @params[:media][:tempfile]
+        @client.update_with_media(@message, File.new(@temp_file_name))
+        erb :result
+      end
     end
   end
 end
